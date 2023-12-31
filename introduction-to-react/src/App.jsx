@@ -1,80 +1,47 @@
-import { useState } from "react";
+import { useState } from 'react';
+import Note from './components/Note'
 
-const App = () => {
-  const [leftCounter, setLeftCounter] = useState(0);
-  const [rightCounter, setRightCounter] = useState(0);
-  const [allClicks, setAllClicks] = useState([]);
-  const [totalClicks, setTotalClicks] = useState(0);
+const App = (props) => {
+  const [notes, setNotes] = useState(props.notes);
+  const [newNote, setNewNote] = useState(    'a new note...'  );
+  const [showAll, setShowAll] = useState(true);
 
-  // setTimeout(()=> { setCounter(counter + 1) }, 1000);
-  // const handleClick = () => {
-  //   console.log('clicked...')
-  // }
+  const notesToShow = showAll ? notes : notes.filter(note => note.important === true)
 
-  // console.log('redering..', counter);
+  const addNote = (event) => {
+    event.preventDefault();
+    const noteObject = {
+      content: newNote,
+      important: Math.random() < 0.5,
+      id: notes.length + 1,
+    }
 
-  // const increaseCounter = () => setCounter(counter + 1);
-  // const decreaseCounter = () => setCounter(counter - 1);
-  // const zeroCounter     = () => setCounter(0);
-
-  const increaseLeftCounter = () => {
-    setLeftCounter(leftCounter + 1);
-    updateTotalClicks();
-    setAllClicks(allClicks.concat('L'));
+    setNotes(notes.concat(noteObject));
+    setNewNote('');
   }
 
-  const increaseRightCounter = () => {
-    setRightCounter(rightCounter + 1);
-    updateTotalClicks();
-    setAllClicks(allClicks.concat('R'));
+  const handleNoteChange = (event) => {
+    console.log(event.target.value);
+    setNewNote(event.target.value);
   }
-
-  const updateTotalClicks = () => {
-    setTotalClicks(totalClicks + 1)
-  }
-
 
   return (
     <div>
-      <Display counter={leftCounter} />
-      <Button text="plus left counter" onClick={increaseLeftCounter} />
-      <Display counter={rightCounter} />
-      <Button text="plus right counter" onClick={increaseRightCounter} />
-      {/* <p> all clicks = { allClicks.join(', ')}</p> */}
-      <History allClicks={allClicks} />
-      <p> total clicks = {totalClicks} </p>
-      {/* <Button text="zero" onClick={zeroCounter} /> */}
-    </div>
-  )
-};
-
-const Display = ({counter}) => {
-  return <div>{counter}</div>;
-}
-
-const Button = ({text, onClick}) => {
-  return <button onClick={onClick}>{text}</button>;
-}
-
-const History = ({allClicks}) => {
-  if(allClicks.length === 0) {
-    return (<p>Application is used by pressing buttons</p>);
-  }
-
-  return (<p>Click History: {allClicks.join(', ')}</p>);
-
-}
-
-
-const Hello = ({ name, age }) => {
-  const bornYear = () => new Date().getFullYear() - age;
-
-  return (
-    <div>
-      <p>
-        Hello {name}, you are {age} years old
-      </p>
-      <p>So you were probably born in {bornYear()}</p>
+      <h1>Notes</h1>
+      <div>
+        <button onClick={() => setShowAll(!showAll)}>
+          show { showAll ? 'important' : 'all' }
+        </button>
+      </div>
+      <ul>
+        {notesToShow.map(note =>
+          <Note key={note.id} note={note} />
+        )}
+      </ul>
+      <form onSubmit={addNote}>
+        <input value={newNote} onChange={handleNoteChange} />
+        <button type="submit">save</button>
+      </form>
     </div>
   )
 }
