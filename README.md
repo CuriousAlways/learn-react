@@ -43,6 +43,21 @@ const Hello = (props) => {
 }
 ```
 
+### Rendering lists
+- to optimize ui rendering react expects a key when rendering a list.
+
+```js
+//...
+const Users = ({users}) => {
+  return (
+    <ul>
+      {users.map((user) => <li key={user.id}> {user.name} </li>)}
+    </ul>
+  )
+}
+//...
+```
+
 ## React hooks
 >-  hooks may only be called from the inside of a function body that defines a React.
 >- hooks must not be called from inside of a loop, a conditional expression, or any place that is not a function defining a component
