@@ -9,10 +9,6 @@ const App = () => {
   const neutralReviewHandler = () => setNeutral(neutral + 1);
   const badReviewHandler = () => setBad(bad + 1);
 
-  const totalReview = good + bad + neutral;
-  const averageScore = (good - bad)/ totalReview;
-  const positiveReviewPercent = good/totalReview;
-
   return (
   <div>
     <h2>Give feedback</h2>
@@ -21,6 +17,24 @@ const App = () => {
       <Button text='neutral' clickHandler={neutralReviewHandler} />
       <Button text='bad' clickHandler={badReviewHandler} />
     </div>
+    <Statistics good={good} bad={bad} neutral={neutral} />
+  </div>
+  );
+}
+
+const Button = ({text, clickHandler}) => {
+  return (
+    <button onClick={clickHandler}>{text}</button>
+  )
+}
+
+const Statistics = ({good, neutral, bad}) => {
+
+  const totalReview = good + bad + neutral;
+  const averageScore = (good - bad)/ totalReview;
+  const positiveReviewPercent = good/totalReview;
+
+  return (
     <div>
       <h3>Statistics</h3>
       <p>
@@ -31,14 +45,7 @@ const App = () => {
         positive: {positiveReviewPercent}%
       </p>
     </div>
-  </div>
   );
-}
-
-const Button = ({text, clickHandler}) => {
-  return (
-    <button onClick={clickHandler}>{text}</button>
-  )
 }
 
 export default App;
