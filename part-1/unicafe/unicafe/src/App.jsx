@@ -9,6 +9,10 @@ const App = () => {
   const neutralReviewHandler = () => setNeutral(neutral + 1);
   const badReviewHandler = () => setBad(bad + 1);
 
+  const totalReview = good + bad + neutral;
+  const averageScore = (good - bad)/ totalReview;
+  const positiveReviewPercent = good/totalReview;
+
   return (
   <div>
     <h2>Give feedback</h2>
@@ -22,7 +26,9 @@ const App = () => {
       <p>
         good: {good} <br/>
         neutral: {neutral} <br/>
-        bad: {bad}
+        bad: {bad} <br/>
+        average: {averageScore} <br/>
+        positive: {positiveReviewPercent}%
       </p>
     </div>
   </div>
