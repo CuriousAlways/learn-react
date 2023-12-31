@@ -29,10 +29,18 @@ const Button = ({text, clickHandler}) => {
 }
 
 const Statistics = ({good, neutral, bad}) => {
-
   const totalReview = good + bad + neutral;
+  if(totalReview === 0) {
+    return (
+      <div>
+        <h3>Statistics</h3>
+        <p>No feedback given</p>
+      </div>
+    );
+  }
+
   const averageScore = (good - bad)/ totalReview;
-  const positiveReviewPercent = good/totalReview;
+  const positiveReviewPercent = (good/totalReview) * 100;
 
   return (
     <div>
