@@ -1,11 +1,27 @@
 import { useState } from 'react'
 
 const App = () => {
-  const [persons, setPersons] = useState([{ name: 'Arto Hellas' }]);
+  const [persons, setPersons] = useState([{ name: 'Arto Hellas', number: '040-123456', id: 1 },
+                                          { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
+                                          { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
+                                          { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }]);
   const [newPerson, setNewPerson] = useState({name:'', number: ''});
+  const [searchTerm, setSearchTerm] = useState('');
 
   function isNameAlreadyPresent(){
     return persons.map((person)=>person.name).includes(newPerson.name);
+  }
+
+  function searchTermInputHandler(event) {
+    setSearchTerm(event.target.value);
+  }
+
+  function filteredPerson() {
+    if(searchTerm.length === 0) {
+      return persons;
+    }
+
+    return persons.filter((person)=> person.name.toLocaleLowerCase().includes(searchTerm));
   }
 
   function submitHandler(event) {
@@ -33,6 +49,9 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <div>
+        filtered shown with: <input value={searchTerm} onChange={searchTermInputHandler} />
+      </div><br/>
       <form onSubmit={submitHandler}>
         <div>
           name: <input value={newPerson.name} onChange={nameInputHandler}/>
@@ -46,7 +65,7 @@ const App = () => {
       </form>
       <h2>Numbers</h2>
       <div>
-        {persons.map((person)=> <Person person={ person } key={person.name} />)}
+        {filteredPerson().map((person)=> <Person person={ person } key={person.name} />)}
       </div>
     </div>
   )
