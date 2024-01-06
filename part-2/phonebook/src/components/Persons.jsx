@@ -5,7 +5,7 @@ const Persons = ({persons, searchTerm}) =>{
       return persons;
     }
 
-    return persons.filter((person)=> person.name.toLocaleLowerCase().includes(searchTerm));
+    return persons.filter((person)=> person.name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase()));
   }
 
   return (

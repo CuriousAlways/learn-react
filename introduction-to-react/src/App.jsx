@@ -1,12 +1,23 @@
-import { useState } from 'react';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 import Note from './components/Note'
 
-const App = (props) => {
-  const [notes, setNotes] = useState(props.notes);
-  const [newNote, setNewNote] = useState(    'a new note...'  );
+const App = () => {
+  const [notes, setNotes] = useState([]);
+  const [newNote, setNewNote] = useState('a new note...');
   const [showAll, setShowAll] = useState(true);
 
   const notesToShow = showAll ? notes : notes.filter(note => note.important === true)
+
+  // execute effect to fetch notes when this component mounts
+  useEffect(()=>{
+    axios
+    .get('http://localhost:3001/notes')
+    .then((response) => {
+      console.log('promise fulfilled');
+      setNotes(response.data);
+    })
+  }, [])
 
   const addNote = (event) => {
     event.preventDefault();
