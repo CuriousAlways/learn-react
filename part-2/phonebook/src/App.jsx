@@ -2,26 +2,32 @@ import { useState } from 'react'
 
 const App = () => {
   const [persons, setPersons] = useState([{ name: 'Arto Hellas' }]);
-  const [newName, setNewName] = useState('');
+  const [newPerson, setNewPerson] = useState({name:'', number: ''});
 
   function isNameAlreadyPresent(){
-    return persons.map((person)=>person.name).includes(newName);
+    return persons.map((person)=>person.name).includes(newPerson.name);
   }
 
   function submitHandler(event) {
     event.preventDefault();
+
+    let newName = newPerson.name;
 
     if(isNameAlreadyPresent()) {
       alert(`${newName} is already added to phonebook`);
       return;
     }
 
-    setPersons([...persons, { name: newName }]);
-    setNewName('')
+    setPersons([...persons, newPerson]);
+    setNewPerson({name:'', number: ''})
   }
 
-  function inputHandler(event) {
-    setNewName(event.target.value);
+  function nameInputHandler(event) {
+    setNewPerson({...newPerson, name: event.target.value});
+  }
+
+  function numberInputHandler(event) {
+    setNewPerson({...newPerson, number: event.target.value});
   }
 
   return (
@@ -29,7 +35,10 @@ const App = () => {
       <h2>Phonebook</h2>
       <form onSubmit={submitHandler}>
         <div>
-          name: <input value={newName} onChange={inputHandler}/>
+          name: <input value={newPerson.name} onChange={nameInputHandler}/>
+        </div>
+        <div>
+          number: <input value={newPerson.number} onChange={numberInputHandler}/>
         </div>
         <div>
           <button type="submit">add</button>
