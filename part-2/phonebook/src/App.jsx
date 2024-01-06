@@ -4,8 +4,18 @@ const App = () => {
   const [persons, setPersons] = useState([{ name: 'Arto Hellas' }]);
   const [newName, setNewName] = useState('');
 
+  function isNameAlreadyPresent(){
+    return persons.map((person)=>person.name).includes(newName);
+  }
+
   function submitHandler(event) {
     event.preventDefault();
+
+    if(isNameAlreadyPresent()) {
+      alert(`${newName} is already added to phonebook`);
+      return;
+    }
+
     setPersons([...persons, { name: newName }]);
     setNewName('')
   }
