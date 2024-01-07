@@ -19,6 +19,41 @@
       "id": 4,
       "content": "Dummy server response",
       "important": true
+    },
+    {
+      "content": "First POST request in react",
+      "important": false,
+      "id": 5
+    },
+    {
+      "content": "Let's try once more",
+      "important": false,
+      "id": 6
+    },
+    {
+      "content": "once more",
+      "important": false,
+      "id": 7
+    },
+    {
+      "content": "again",
+      "important": false,
+      "id": 8
+    },
+    {
+      "content": "till atleast one is important",
+      "important": true,
+      "id": 9
+    },
+    {
+      "content": "a new note...",
+      "important": true,
+      "id": 10
+    },
+    {
+      "content": "A new note after refactoring",
+      "important": false,
+      "id": 11
     }
   ]
 }
