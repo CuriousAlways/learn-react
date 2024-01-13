@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
 import Persons from './components/Persons';
+import PhonebookService from './services/phonebook';
 
 const App = () => {
   useEffect(()=>{
@@ -36,8 +37,13 @@ const App = () => {
       return;
     }
 
-    setPersons([...persons, newPerson]);
-    setNewPerson({name:'', number: ''})
+    PhonebookService
+      .createPerson(newPerson)
+      .then((newPersonkData) => {
+        setPersons([...persons, newPersonkData]);
+        setNewPerson({name:'', number: ''});
+      })
+
   }
 
   function nameInputHandler(event) {
