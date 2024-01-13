@@ -1,4 +1,4 @@
-const Persons = ({persons, searchTerm}) =>{
+const Persons = ({persons, searchTerm, onDelete}) =>{
 
   function filteredPerson() {
     if(searchTerm.length === 0) {
@@ -10,14 +10,17 @@ const Persons = ({persons, searchTerm}) =>{
 
   return (
     <div>
-      {filteredPerson().map((person)=> <Person person={ person } key={person.name} />)}
+      {filteredPerson().map((person)=> <Person person={ person } key={person.name} onClick={onDelete}/>)}
     </div>
   );
 }
 
-const Person = ({person}) => {
+const Person = ({person, onClick}) => {
   return (
-    <p>{ person.name } { person.number} </p>
+    <p>
+      { person.name } { person.number}
+      <button onClick={() => onClick(person)}>delete</button>
+    </p>
   )
 }
 

@@ -2,17 +2,29 @@ import axios from 'axios';
 
 const BaseUrl = 'http://localhost:3001/persons'
 
+const getPerson = () => {
+  return axios
+          .get(BaseUrl)
+          .then(response => response.data );
+}
+
 const createPerson = (newPerson) => {
   return axios
           .post(BaseUrl, newPerson)
           .then((response) => {
-            console.log(`new phonebook created successfully`);
-            console.log(response.data);
             return response.data;
           });
 }
 
+const destroyPerson = (id) => {
+  return axios
+          .delete(`${BaseUrl}/${id}`)
+          .then((response) => response.data );
+}
+
 export default {
-  createPerson: createPerson
+  getPerson: getPerson,
+  createPerson: createPerson,
+  destroyPerson: destroyPerson
 
 }

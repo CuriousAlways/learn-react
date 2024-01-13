@@ -3,18 +3,9 @@ import { useEffect, useState } from 'react'
 import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
 import Persons from './components/Persons';
-import PhonebookService from './services/phonebook';
+import PersonService from './services/phonebook';
 
 const App = () => {
-  useEffect(()=>{
-    axios
-      .get('http://localhost:3001/persons')
-      .then((response)=>{
-        console.log(response);
-        setPersons(response.data);
-      })
-  }, []);
-
   const [persons, setPersons] = useState([]);
   const [newPerson, setNewPerson] = useState({name:'', number: ''});
   const [searchTerm, setSearchTerm] = useState('');
@@ -37,13 +28,12 @@ const App = () => {
       return;
     }
 
-    PhonebookService
-      .createPerson(newPerson)
-      .then((newPersonkData) => {
-        setPersons([...persons, newPersonkData]);
-        setNewPerson({name:'', number: ''});
-      })
-
+    PersonService
+    .createPerson(newPerson)
+    .then((newPersonkData) => {
+      setPersons([...persons, newPersonkData]);
+      setNewPerson({name:'', number: ''});
+    });
   }
 
   function nameInputHandler(event) {
@@ -54,6 +44,31 @@ const App = () => {
     setNewPerson({...newPerson, number: event.target.value});
   }
 
+  function destroyHandler(person) {
+    const confirmDeletion = window.confirm(`Delete ${person.name}`);
+
+    if(!confirmDeletion) {
+      return;
+    }
+
+    PersonService
+    .destroyPerson(person.id)
+    .then(() => {
+      let updatedPerson = persons.filter((p) => p.id !== person.id);
+
+      setPersons(updatedPerson);
+    });
+  }
+
+  /* Effects */
+  useEffect(()=>{
+    PersonService
+      .getPerson()
+      .then((personsData)=>{
+        setPersons(personsData);
+      })
+  }, []);
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -61,7 +76,7 @@ const App = () => {
       <h3>Add a new</h3>
       <PersonForm newPerson={newPerson} onSubmit={submitHandler} onNameInput={nameInputHandler} onNumberInput={numberInputHandler} />
       <h3>Numbers</h3>
-      <Persons persons={persons} searchTerm={searchTerm} />
+      <Persons persons={persons} searchTerm={searchTerm} onDelete={destroyHandler} />
     </div>
   )
 }
