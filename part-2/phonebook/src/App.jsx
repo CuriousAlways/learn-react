@@ -3,12 +3,14 @@ import { useEffect, useState } from 'react'
 import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
 import Persons from './components/Persons';
+import Notification from './components/Notification';
 import PersonService from './services/phonebook';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newPerson, setNewPerson] = useState({name:'', number: ''});
   const [searchTerm, setSearchTerm] = useState('');
+  const [message, setMessage] = useState(null);
 
   function isNameAlreadyPresent(){
     return persons.map((person)=>person.name).includes(newPerson.name);
@@ -16,6 +18,11 @@ const App = () => {
 
   function searchTermInputHandler(event) {
     setSearchTerm(event.target.value);
+  }
+
+  function notifyUser(msg, type) {
+    setMessage({ text: msg, type: type });
+    setTimeout(()=>{setMessage(null)}, 2000);
   }
 
   function updatePerson() {
@@ -32,7 +39,12 @@ const App = () => {
 
           return p;
         }));
-      });
+        notifyUser(`${updatePerson.name} updated successfully`, 'success');
+      })
+      .catch((reason) => {
+        notifyUser(`${person.name} already removed from server`, 'failure');
+      })
+
   }
 
   function createPerson() {
@@ -40,8 +52,10 @@ const App = () => {
     .createPerson(newPerson)
     .then((newPersonkData) => {
       setPersons([...persons, newPersonkData]);
+      notifyUser(`${newPerson.name} created successfully`, 'success');
       setNewPerson({name:'', number: ''});
     });
+
   }
 
   function submitHandler(event) {
@@ -82,6 +96,10 @@ const App = () => {
       let updatedPerson = persons.filter((p) => p.id !== person.id);
 
       setPersons(updatedPerson);
+      notifyUser(`${person.name} deleted successfully`, 'success');
+    })
+    .catch((reason) => {
+      notifyUser(`${person.name} already removed from server`, 'failure');
     });
   }
 
@@ -96,6 +114,7 @@ const App = () => {
 
   return (
     <div>
+      { message !== null && <Notification message={message} /> }
       <h2>Phonebook</h2>
       <Filter searchTerm={searchTerm} onChange={searchTermInputHandler}/><br/>
       <h3>Add a new</h3>
