@@ -22,9 +22,17 @@ const destroyPerson = (id) => {
           .then((response) => response.data );
 }
 
+const updatePerson = (id, updatedPerson) => {
+  return axios
+          .put(`${BaseUrl}/${id}`, updatedPerson)
+          .then((response) => {
+            return response.data;
+          })
+}
+
 export default {
   getPerson: getPerson,
   createPerson: createPerson,
-  destroyPerson: destroyPerson
-
+  destroyPerson: destroyPerson,
+  updatePerson: updatePerson
 }

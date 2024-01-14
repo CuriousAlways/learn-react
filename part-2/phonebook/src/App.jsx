@@ -18,22 +18,47 @@ const App = () => {
     setSearchTerm(event.target.value);
   }
 
-  function submitHandler(event) {
-    event.preventDefault();
+  function updatePerson() {
+    let person = persons.find((person) => person.name === newPerson.name)
+    let updatedPerson = {...person, number: newPerson.number};
 
-    let newName = newPerson.name;
+    PersonService
+      .updatePerson(person.id, updatedPerson)
+      .then((returnedPerson) => {
+        setPersons(persons.map((p) =>{
+          if(p.id===returnedPerson.id) {
+            return returnedPerson;
+          }
 
-    if(isNameAlreadyPresent()) {
-      alert(`${newName} is already added to phonebook`);
-      return;
-    }
+          return p;
+        }));
+      });
+  }
 
+  function createPerson() {
     PersonService
     .createPerson(newPerson)
     .then((newPersonkData) => {
       setPersons([...persons, newPersonkData]);
       setNewPerson({name:'', number: ''});
     });
+  }
+
+  function submitHandler(event) {
+    event.preventDefault();
+
+    if(isNameAlreadyPresent()) {
+      let confirmUpdate = window.confirm(`${newPerson.name} is already added to phonebook, replace old number with new number`);
+
+      if(!confirmUpdate) {
+        return;
+      }
+
+      updatePerson();
+      return;
+    }
+
+    createPerson();
   }
 
   function nameInputHandler(event) {
