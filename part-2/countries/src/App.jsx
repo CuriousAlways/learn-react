@@ -33,7 +33,7 @@ function App() {
       <div>
         find countries <input type='text' value={searchTerm} onChange={changeHandler}/>
       </div>
-      {searchTerm && <CountryList countries={filteredCountriesList()} />}
+      {searchTerm && <CountryList countries={filteredCountriesList()} setSearchTerm={setSearchTerm} />}
     </div>
   )
 }

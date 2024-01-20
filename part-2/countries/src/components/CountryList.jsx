@@ -1,6 +1,13 @@
 import Country from "./Country";
 
-const CountryList = ({countries}) => {
+const CountryList = ({countries, setSearchTerm}) => {
+  const showCountryHandler = (event) => {
+    const countryCcaCode = event.target.id;
+    const country = countries.find((country) => country.cca3 === countryCcaCode);
+
+    setSearchTerm(country.name.official)
+  }
+
   if(countries.length === 1){
     return (
       <div>
@@ -14,7 +21,7 @@ const CountryList = ({countries}) => {
   else if(countries.length > 1 && countries.length < 10) {
     return (
       <div>
-        {countries.map((country) => <p key={country.cca3}> {country.name.official}</p>)}
+        {countries.map((country) => <p key={country.cca3}> {country.name.official} <button id={country.cca3} onClick={showCountryHandler}>Show</button></p>)}
       </div>
     );
   }
