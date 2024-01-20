@@ -5,7 +5,7 @@ import Notification from './components/Notification';
 import Footer from './components/Footer';
 
 const App = () => {
-  const [notes, setNotes] = useState([]);
+  const [notes, setNotes] = useState(null);
   const [newNote, setNewNote] = useState('a new note...');
   const [showAll, setShowAll] = useState(true);
   const [errorMessage, setErrorMessage] = useState('some error happened...')
@@ -93,7 +93,7 @@ const App = () => {
         </button>
       </div>
       <ul>
-        {notesToShow.map(note =>
+        {notesToShow?.map(note =>
           <Note key={note.id} note={note} toggleImportanceOf={toggleImportanceOf} />
         )}
       </ul>
