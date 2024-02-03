@@ -1,37 +1,35 @@
-import noteService from './services/notes';
-import { useEffect, useState } from 'react';
-import Note from './components/Note';
-import Notification from './components/Notification';
-import Footer from './components/Footer';
+import noteService from "./services/notes";
+import { useEffect, useState } from "react";
+import Note from "./components/Note";
+import Notification from "./components/Notification";
+import Footer from "./components/Footer";
 
 const App = () => {
   const [notes, setNotes] = useState(null);
-  const [newNote, setNewNote] = useState('a new note...');
+  const [newNote, setNewNote] = useState("a new note...");
   const [showAll, setShowAll] = useState(true);
-  const [errorMessage, setErrorMessage] = useState('some error happened...')
+  const [errorMessage, setErrorMessage] = useState(null);
 
-  const notesToShow = showAll ? notes : notes.filter(note => note.important === true)
+  const notesToShow = showAll
+    ? notes
+    : notes.filter((note) => note.important === true);
 
   // execute effect to fetch notes when this component mounts
-  useEffect(()=>{
-    noteService
-      .getAll()
-      .then((initialNotes) => setNotes(initialNotes));
+  useEffect(() => {
+    noteService.getAll().then((initialNotes) => setNotes(initialNotes));
   }, []);
 
   const addNote = (event) => {
     event.preventDefault();
     const noteObject = {
       content: newNote,
-      important: Math.random() < 0.5
-    }
+      important: Math.random() < 0.5,
+    };
 
-    noteService
-      .create(noteObject)
-      .then((returnedNote) => {
-        setNotes(notes.concat(returnedNote));
-        setNewNote('');
-      })
+    noteService.create(noteObject).then((returnedNote) => {
+      setNotes(notes.concat(returnedNote));
+      setNewNote("");
+    });
 
     // axios
     //   .post('http://localhost:3001/notes', noteObject)
@@ -40,34 +38,38 @@ const App = () => {
     //     setNotes(notes.concat(response.data));
     //     setNewNote('');
     //   })
-  }
+  };
 
   const handleNoteChange = (event) => {
     console.log(event.target.value);
     setNewNote(event.target.value);
-  }
+  };
 
   const toggleImportanceOf = (id) => {
     let url = `http://localhost:3001/notes/${id}`;
-    let note = notes.find(n => n.id === id );
-    let updatedNote = { ...note, important: !note.important }
+    let note = notes.find((n) => n.id === id);
+    let updatedNote = { ...note, important: !note.important };
 
     noteService
       .update(id, updatedNote)
       .then((returnedNote) => {
-        setNotes(notes.map((note) => {
-          if(note.id === returnedNote.id) {
-            return returnedNote;
-          }
-          return note;
-        }))
+        setNotes(
+          notes.map((note) => {
+            if (note.id === returnedNote.id) {
+              return returnedNote;
+            }
+            return note;
+          })
+        );
       })
-      .catch(error => {
-        setErrorMessage(`Note '${note.content}' was already removed from server`);
+      .catch((error) => {
+        setErrorMessage(
+          `Note '${note.content}' was already removed from server`
+        );
         setTimeout(() => {
-          setErrorMessage(null)
+          setErrorMessage(null);
         }, 5000);
-        setNotes(notes.filter(n => n.id !== id));
+        setNotes(notes.filter((n) => n.id !== id));
       });
 
     // axios
@@ -81,7 +83,7 @@ const App = () => {
     //       return note;
     //     }))
     //   })
-  }
+  };
 
   return (
     <div>
@@ -89,13 +91,17 @@ const App = () => {
       <Notification message={errorMessage} />
       <div>
         <button onClick={() => setShowAll(!showAll)}>
-          show { showAll ? 'important' : 'all' }
+          show {showAll ? "important" : "all"}
         </button>
       </div>
       <ul>
-        {notesToShow?.map(note =>
-          <Note key={note.id} note={note} toggleImportanceOf={toggleImportanceOf} />
-        )}
+        {notesToShow?.map((note) => (
+          <Note
+            key={note.id}
+            note={note}
+            toggleImportanceOf={toggleImportanceOf}
+          />
+        ))}
       </ul>
       <form onSubmit={addNote}>
         <input value={newNote} onChange={handleNoteChange} />
@@ -103,7 +109,7 @@ const App = () => {
       </form>
       <Footer />
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;
