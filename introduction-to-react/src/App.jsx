@@ -1,14 +1,20 @@
 import noteService from "./services/notes";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Note from "./components/Note";
 import Notification from "./components/Notification";
 import Footer from "./components/Footer";
+import Toggalable from "./components/Toggalable";
+import LoginForm from "./components/LoginForm";
+import NoteForm from "./components/NoteForm";
 
 const App = () => {
   const [notes, setNotes] = useState(null);
-  const [newNote, setNewNote] = useState("a new note...");
   const [showAll, setShowAll] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loginVisible, setLoginVisible] = useState(false);
+  const toggelableRef = useRef();
 
   const notesToShow = showAll
     ? notes
@@ -19,17 +25,12 @@ const App = () => {
     noteService.getAll().then((initialNotes) => setNotes(initialNotes));
   }, []);
 
-  const addNote = (event) => {
-    event.preventDefault();
-    const noteObject = {
-      content: newNote,
-      important: Math.random() < 0.5,
-    };
-
-    noteService.create(noteObject).then((returnedNote) => {
-      setNotes(notes.concat(returnedNote));
-      setNewNote("");
-    });
+  const addNote = (note) => {
+    // let mock api calls are successful
+    setNotes((notes || []).concat(note));
+    // noteService.create(note).then((returnedNote) => {
+    //   setNotes(notes.concat(returnedNote));
+    // });
 
     // axios
     //   .post('http://localhost:3001/notes', noteObject)
@@ -38,11 +39,10 @@ const App = () => {
     //     setNotes(notes.concat(response.data));
     //     setNewNote('');
     //   })
-  };
 
-  const handleNoteChange = (event) => {
-    console.log(event.target.value);
-    setNewNote(event.target.value);
+    // HIDE FORM AFTER SUBMIT
+    // toggelableRef.current.toggleVisibility();
+    toggelableRef.current.whitelistedMethod();
   };
 
   const toggleImportanceOf = (id) => {
@@ -85,10 +85,28 @@ const App = () => {
     //   })
   };
 
+  /****** Some dummy method which does nothing */
+  const handleLogin = (event) => {
+    event.preventDefault();
+    console.log("Login form submitted");
+  };
+
+  const hideWhenVisible = { display: loginVisible ? "none" : "" };
+  const showWhenVisible = { display: loginVisible ? "" : "none" };
+
   return (
     <div>
       <h1>Notes</h1>
       <Notification message={errorMessage} />
+      <Toggalable buttonLabel="login">
+        <LoginForm
+          username={username}
+          password={password}
+          handleUsernameChange={({ target }) => setUsername(target.value)}
+          handlePasswordChange={({ target }) => setPassword(target.value)}
+          handleSubmit={handleLogin}
+        />
+      </Toggalable>
       <div>
         <button onClick={() => setShowAll(!showAll)}>
           show {showAll ? "important" : "all"}
@@ -103,10 +121,9 @@ const App = () => {
           />
         ))}
       </ul>
-      <form onSubmit={addNote}>
-        <input value={newNote} onChange={handleNoteChange} />
-        <button type="submit">save</button>
-      </form>
+      <Toggalable buttonLabel="add new Note" ref={toggelableRef}>
+        <NoteForm createNote={addNote} />
+      </Toggalable>
       <Footer />
     </div>
   );
