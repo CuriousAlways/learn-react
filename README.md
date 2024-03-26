@@ -229,7 +229,7 @@ export default function Counter() {
 
   //App.jsx
   const App = () => {
-    const myRef = useRef();
+    const inputRef = useRef();
 
     function handleClick() {
       console.log(inputRef)
@@ -238,7 +238,7 @@ export default function Counter() {
     // ....
     return (
       // .....
-      <MyInput ref={myRef}>
+      <MyInput ref={inputRef}>
       <button onClick={handleClick}>
         Focus the input
       </button>
@@ -251,6 +251,93 @@ export default function Counter() {
 > - `<MyInput ref={inputRef} />` tells React to put the corresponding DOM node into `inputRef.current`. However, it’s up to the MyInput component to opt into that—by default, it doesn’t.
 > - The `MyInput` component is declared using `forwardRef`. **This opts it into receiving the inputRef from above as the second ref argument which is declared after props.**
 > - MyInput itself passes the ref it received to the `<input>` inside of it.
+
+- ### useReducer
+
+  - Its state management solution provided by react similar to redux.
+
+  ```js
+  /********************************************
+   * counterReducer.js
+  ********************************************/
+  const counterReducer = (state, action) => {
+    switch(action.type) {
+      case 'INCREMENT': return state + 1;
+      case 'DECREMENT': return state - 1;
+      default: return 0;
+    }
+  }
+
+  export default counterReducer;
+
+  /******************************************
+   * App.jsx
+  ******************************************/
+  import { useReducer } from 'react';
+  import counterReducer from './counterReducer';
+
+  const App = () => {
+    const [counter, counterDispatch] = useReducer(counterReducer, 0);
+
+    return (
+      <div>
+        <h1>{counter} </h1>
+        <div>
+          <button onClick={() => counterDispatch({type: "INCREMENT"})}> + </button>
+          <button onClick={() => counterDispatch({type: "DECREMENT"})}> - </button>
+        <div>
+      </div>
+    )
+  }
+  ```
+
+# React Context Api
+
+- It lets us teleport data from one part of component tree to any of its children(at any depth).
+- It avoid having to pass prop from intermidiate component just so some data would be used somewhere down the component tree (`prop drilling`).
+- steps to use context for accessing data
+  - create and initialize context using `createContext`
+  - wrap component whose children would need access to context data
+  - access context value using `useContext` in the children
+
+```js
+/*************************************
+ * create context
+ * App.jsx
+ ************************************/
+import { createContext } from "react";
+
+// create context with some initial/default value
+const SecretContext = createContext("");
+
+const App = () => {
+  // wrap parent in context provider
+  return (
+    <SecretContext.Provider value="Very important random secret">
+      <Parent1>
+        <Children1>
+          <Children2 />
+        </Children1>
+      </Parent1>
+    </SecretContext.Provider>
+  );
+};
+
+export default App;
+export { SecretContext };
+
+/***************************************
+ * Chilren2.jsx
+ **************************************/
+import { useContext } from "react";
+import { SecretContext } from "./App";
+
+const Children2 = () => {
+  const value = useContext(SecretContext);
+
+  return <h1>{value}</h1>;
+};
+```
 
 # Axios
 
@@ -269,4 +356,141 @@ promise.then((response) => {
   // do something after the promise is successfully fulfilled
   console.log(response.data);
 });
+```
+
+# Redux
+
+=============
+
+### Intallation
+
+```bash
+# install redux toolkit
+npm install @reduxjs/toolkit
+npm install redux react-redux
+```
+
+## REDUX
+
+- Redux is global state management tool.
+
+```js
+
+// ACTION -> it describes what we intend to do [A function that returns an object]
+const increment = () => {
+  return {
+    type: 'INCREMENT'
+  }
+}
+
+const decrement = () => {
+  return {
+    type: 'DECREMENT'
+  }
+}
+
+// REDUCER -> reducers describes how we want to handle different ACTIONS.
+// in practice reducer is a function that takes a state and an action  and returns new state
+const counter = (state=0, action) => {
+  swtich(action.type) {
+    case 'INCREMENT': return state + 1;
+    case 'DECREMENT': return state - 1;
+  }
+}
+
+// STORE -> global object to store all data/state
+let store = createStore(counter);
+
+// DISPATCH -> it dispatches actions to reducers to manipulate values in store
+store.dispatch(increment())
+
+
+/******************************************
+ * Overall flow of reducers
+ * DISPATCH dispatches ACTION to REDUCERS
+ * which describes how to handle the ACTION
+ * which inturn updates STORE.
+ *******************************************/
+```
+
+- Using newer react-redux toolkit reduces a lot of boiler plate that we have to write.
+
+```js
+// with redux toolkit
+/*******************************************
+ * create reducers and actions with create slice
+ * counter_reducer.js
+ *******************************************/
+import { createSlice } from "@reduxjs/toolkit";
+
+const counterSlice = createSlice({
+  name: 'counter',
+  initialState: 0,
+  reducer: {
+    function incrementAction(state, action) {
+      return state + 1
+    },
+    function decrementAction(state, action) {
+      return state - 1
+    }
+    function zeroAction(state, action) {
+      return 0;
+    }
+  }
+});
+
+export const { incrementAction, decrementAction, zeroAction} = counterSlice.actions;
+export default counterSlice.reducer;
+
+
+/*******************************************************************
+ * create store using reducers
+ * store.js
+ ******************************************************************/
+import {configureStore} from '@reduxjs/toolkit';
+import counterReducer from 'counter_reducer.js';
+
+const store = configureStore({
+  reducers: {
+    counter: counterReducer
+  }
+})
+
+export default store;
+
+/******************************************************************
+ * wrap your app with store
+ * main.jsx
+ * ***************************************************************/
+import { Provider } from "react-redux";
+import store from 'store.js'
+import App from 'App'
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <Provider store={store}>
+    <App />
+  </Provider>
+);
+
+
+/****************************************************************
+ * use store and dispatch actions to it in component
+ * App.jsx
+ * *************************************************************/
+import {incrementAction, decrementAction, zeroAction} from 'counterReducer'
+import {useDispatch, useSelector} from 'react-redux'
+
+const App = () => {
+  const counter = useSelector((state)=> state.counter);
+
+  return (
+    <div>
+      <h1>{counter}</h1>
+      <button onClick={()=> useDispatch(incrementAction())}>+</button>
+      {/*incrementAction() is same as {type: 'counter/incrementAction' } if it has any argument then it would have become its payload*/}
+      <button onClick={()=> useDispatch(decrementAction())}>-</button>
+      <button onClick={()=> useDispatch(zeroAction())}>0</button>
+    </div>
+  )
+}
 ```
